@@ -6,13 +6,13 @@ import logging
 import pymongo
 from newspaper import Article
 from transformers import pipeline
-from slugify import slugify  # For safe filenames
-import textwrap  # To split long text into smaller parts
+from slugify import slugify 
+import textwrap  
 
-# ---------------------- Configurations ----------------------
+
 logging.basicConfig(filename='news_agent.log', level=logging.INFO)
 
-# MongoDB Connection
+
 MONGO_URI = "mongodb+srv://news_db:12345@cluster0.hryxp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # Change if using remote DB
 DB_NAME = "news_db"
 COLLECTION_NAME = "articles"
@@ -20,7 +20,7 @@ COLLECTION_NAME = "articles"
 # Load summarization model once (for better performance)
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-# ---------------------- 1️⃣ MongoDB Connection ----------------------
+
 def get_mongo_collection():
     """Connects to MongoDB and returns the collection."""
     try:
@@ -28,10 +28,10 @@ def get_mongo_collection():
         db = client[DB_NAME]
         return db[COLLECTION_NAME]
     except Exception as e:
-        logging.error(f"❌ MongoDB Connection Error: {e}")
+        logging.error(f" MongoDB Connection Error: {e}")
         return None
 
-# ---------------------- 2️⃣ Read Links from CSV ----------------------
+
 def read_news_links(csv_file="data.csv"):
     """Reads news URLs from a CSV file, ensuring correct format."""
     try:
@@ -42,13 +42,13 @@ def read_news_links(csv_file="data.csv"):
         if not urls:
             raise ValueError("No valid URLs found in CSV!")
 
-        print(f"✅ Found {len(urls)} valid URLs in CSV.")
+        print(f" Found {len(urls)} valid URLs in CSV.")
         return urls
     except Exception as e:
-        print(f"❌ Error reading CSV: {e}")
+        print(f" Error reading CSV: {e}")
         return []
 
-# ---------------------- 3️⃣ Extract News Content ----------------------
+
 def extract_news_content(url):
     """Extracts article text from a given URL."""
     try:
@@ -64,7 +64,7 @@ def extract_news_content(url):
         print(f"⚠️ Error extracting from {url}: {e}")
         return None, None
 
-# ---------------------- 4️⃣ Summarization (Handles Long Articles) ----------------------
+
 def summarize_text(article_text):
     """Summarizes article, handling long text by splitting into chunks."""
     MAX_TOKENS = 1024  # Model limit
@@ -88,7 +88,7 @@ def summarize_text(article_text):
         summary = summarizer(article_text, max_length=150, min_length=50, do_sample=False)
         return summary[0]['summary_text']
 
-# ---------------------- 5️⃣ SEO Optimization ----------------------
+
 def optimize_for_seo(summary, title):
     """Generates SEO metadata and keywords."""
     keywords = ", ".join([word.capitalize() for word in title.split()[:5]])  # Simple keyword extraction
@@ -98,7 +98,7 @@ def optimize_for_seo(summary, title):
         'keywords': keywords.split()
     }
 
-# ---------------------- 6️⃣ Store in MongoDB ----------------------
+
 def store_in_mongodb(article_data, seo_data):
     """Stores article data in MongoDB."""
     collection = get_mongo_collection()
@@ -116,11 +116,11 @@ def store_in_mongodb(article_data, seo_data):
             "summary": article_data['summary']
         }
         collection.insert_one(document)
-        print(f"✅ Article saved to MongoDB: {seo_data['title']}")
+        print(f" Article saved to MongoDB: {seo_data['title']}")
     except Exception as e:
-        print(f"❌ Error saving to MongoDB: {e}")
+        print(f" Error saving to MongoDB: {e}")
 
-# ---------------------- 7️⃣ Execute Workflow ----------------------
+
 def process_news_articles(csv_file="data.csv"):
     """Main function to process news articles from CSV and store in MongoDB."""
     urls = read_news_links(csv_file)
@@ -143,7 +143,7 @@ def process_news_articles(csv_file="data.csv"):
             'summary': summary
         }, seo_data)
 
-# ---------------------- Run the System ----------------------
+
 if __name__ == "__main__":
     print(f"🚀 News Agent started. Processing links from CSV...")
     process_news_articles()

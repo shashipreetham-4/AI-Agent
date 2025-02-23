@@ -15,7 +15,7 @@ export async function connectToDB() {
     cached.promise = mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName: "news_db", // ✅ Ensure this matches your MongoDB database name
+      dbName: "news_db", 
     }).then((mongoose) => mongoose);
   }
   cached.conn = await cached.promise;

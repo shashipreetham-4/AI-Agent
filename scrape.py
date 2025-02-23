@@ -5,7 +5,7 @@ from utils import fetch_article_content, fetch_articles_selenium, save_to_csv
 import time
 import random
 import schedule
-import subprocess  # To run db.py after scraping
+import subprocess  
 
 import requests
 import pandas as pd
@@ -40,7 +40,7 @@ def get_existing_links(csv_file):
         df = pd.read_csv(csv_file)
         return set(df["url"].dropna().tolist())
     except FileNotFoundError:
-        return set()  # If CSV doesn't exist, return an empty set
+        return set()  
 
 def scrape_news():
     """Scrapes news websites periodically and updates the CSV with new articles."""
@@ -76,28 +76,28 @@ def scrape_news():
                         news_data[source["csv_file"]] = []
                     news_data[source["csv_file"]].extend(new_articles)
 
-    # Save new articles to CSV
+
     for csv_file, articles in news_data.items():
         if articles:
             save_to_csv(articles, csv_file, append=True)  # Append new articles
-            print(f"✅ {len(articles)} new articles added to '{csv_file}'")
+            print(f" {len(articles)} new articles added to '{csv_file}'")
         else:
             print(f"⚠ No new articles found for '{csv_file}'")
 
-    # ---------------------- Run dbs.py After Scraping ----------------------
+
     print("🚀 Running dbs.py to process scraped data...")
     try:
         subprocess.run(["python", "dbs.py"], check=True)
         print("✅ Successfully ran dbs.py")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error running dbs.py: {e}")
+        print(f" Error running dbs.py: {e}")
 
-# ---------------------- Automated Scheduling ----------------------
+
 def start_scheduler():
     """Schedules the scraper to run every hour."""
     print("🚀 Starting the news scraper...")
     
-    # Run the scraper immediately
+
     scrape_news()
 
     # Schedule it to run every hour

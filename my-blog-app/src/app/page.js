@@ -1,11 +1,11 @@
-"use client"; // Ensure this is at the top
+"use client"; 
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Blogs from "@/components/Blogs";
 
 export default function Home() {
-  const router = useRouter(); // Use Router for Navigation
+  const router = useRouter(); 
 
   return (
     <div className="p-6 max-w-4xl mx-auto">

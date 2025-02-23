@@ -1,4 +1,4 @@
-"use client"; // ✅ Required because of useState and useEffect
+"use client"; 
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -11,7 +11,7 @@ export default function Blogs({ language }) {
 
   useEffect(() => {
     fetchBlogs();
-  }, [page]); // 🔄 Fetches when the page number changes
+  }, [page]); 
 
   const fetchBlogs = async () => {
     setLoading(true);
