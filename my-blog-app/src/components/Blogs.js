@@ -26,7 +26,7 @@ export default function Blogs({ language }) {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">{language === "hi" ? "नवीनतम ब्लॉग्स" : "Latest Blogs"}</h1>
+      <h1 className="text-3xl font-bold mb-6">{language === "hi" ? "नवीनतम ब्लॉग्स" : "Telangana"}</h1>
       
       {loading && <p>Loading...</p>}
       {blogs.length === 0 && !loading && <p>No blogs found.</p>}

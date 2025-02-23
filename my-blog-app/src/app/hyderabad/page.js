@@ -44,10 +44,13 @@ export default function HyderabadBlogs() {
       <div className="space-y-6">
         {blogs.map((blog) => (
           <div key={blog._id} className="border p-4 rounded-lg shadow-lg bg-white">
-            <h2 className="text-2xl font-semibold">{blog.title}</h2>
+            <h2 className="text-2xl font-semibold text-black">{blog.title}</h2>
             <p className="text-sm text-gray-500">🗓️ {blog.date}</p>
+            <h3 className="text-lg font-semibold text-black">Description:</h3>
             <p className="text-gray-700 my-2">{blog.meta_description}</p>
+            <h3 className="text-lg font-semibold text-black">Content:</h3>
             <p className="text-gray-900">{blog.text}</p>
+            <h3 className="text-lg font-semibold text-black">Keywords:</h3>
             <p className="text-sm text-blue-600 mt-2">📝 Keywords: {blog.keywords.join(", ")}</p>
           </div>
         ))}
