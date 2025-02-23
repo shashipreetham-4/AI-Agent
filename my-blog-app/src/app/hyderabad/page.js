@@ -52,6 +52,8 @@ export default function HyderabadBlogs() {
             <p className="text-gray-900">{blog.text}</p>
             <h3 className="text-lg font-semibold text-black">Keywords:</h3>
             <p className="text-sm text-blue-600 mt-2">📝 Keywords: {blog.keywords.join(", ")}</p>
+            <h3 className="text-lg font-semibold text-black">Topic:</h3>
+            <p className="text-gray-700 my-2">{blog.topic}</p>
           </div>
         ))}
       </div>
