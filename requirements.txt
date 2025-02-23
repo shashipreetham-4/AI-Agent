@@ -5,6 +5,7 @@ huggingface_hub
 beautifulsoup4
 python-dotenv
 lxml
+pandas
 requests
 torch
 pymongo
