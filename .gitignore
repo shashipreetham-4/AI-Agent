@@ -1,5 +1,5 @@
-.venv/
-__pycache__/
+venv/
+*.dylib
+*.pkl
 *.log
-*.sqlite3
-.DS_Store
+__pycache__/
