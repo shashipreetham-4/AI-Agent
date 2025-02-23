@@ -16,25 +16,21 @@ logging.basicConfig(filename='news_agent.log', level=logging.INFO)
 MONGO_URI = "mongodb+srv://news_db:12345@cluster0.hryxp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # Change if using remote DB
 DB_NAME = "news_db"
 
-# Default collection names can be used if not overridden.
+# Default collection names
 DEFAULT_ARTICLES_COLLECTION = "articles"
 HYD_COLLECTION = "hyd"
 
-# Load summarization model once (for better performance)
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# Load summarization model using LED which can process long documents
+summarizer = pipeline("summarization", model="allenai/led-large-16384")
 
-# ---------------------- Translator (using Facebook's M2M100) ----------------------
+# ---------------------- Translator (using Helsinki-NLP/opus-mt-en-hi) ----------------------
 def translate_to_hindi(text):
     """
-    Translates the given text from English to Hindi using Facebook's M2M100 model.
+    Translates the given text from English to Hindi using the Helsinki-NLP/opus-mt-en-hi model.
+    This model is faster and generally lighter than m2m100.
     """
     try:
-        translator = pipeline(
-            "translation",
-            model="facebook/m2m100_418M",
-            src_lang="en",
-            tgt_lang="hi"
-        )
+        translator = pipeline("translation_en_to_hi", model="Helsinki-NLP/opus-mt-en-hi")
         translation = translator(text, max_length=512)
         return translation[0]['translation_text']
     except Exception as e:
@@ -53,22 +49,19 @@ def get_mongo_collection(collection_name):
         return None
 
 # ---------------------- 2️⃣ Read Links from CSV ----------------------
-def read_news_links(csv_file="data/hyderabad_news.csv"):
+def read_news_links(csv_file):
     """Reads news URLs from a CSV file, ensuring correct format."""
     try:
-        df = pd.read_csv(csv_file, header=None, usecols=[1], names=["url"])  # Read only 2nd column
-        
-        # Drop invalid URLs (e.g., "Failed to fetch content")
-        df = df[df["url"].str.startswith("http", na=False)]  
-        
+        df = pd.read_csv(csv_file, header=None, usecols=[1], names=["url"])  # Reading the 2nd column
+        # Drop invalid URLs (ensure they start with http)
+        df = df[df["url"].str.startswith("http", na=False)]
         urls = df["url"].tolist()
         if not urls:
             raise ValueError("No valid URLs found in CSV!")
-
-        print(f"✅ Found {len(urls)} valid URLs in CSV.")
+        print(f"✅ Found {len(urls)} valid URLs in {csv_file}.")
         return urls
     except Exception as e:
-        print(f"❌ Error reading CSV: {e}")
+        print(f"❌ Error reading CSV {csv_file}: {e}")
         return []
 
 # ---------------------- 3️⃣ Extract News Content ----------------------
@@ -88,32 +81,41 @@ def extract_news_content(url):
 
 # ---------------------- 4️⃣ Summarization (Handles Long Articles) ----------------------
 def summarize_text(article_text):
-    """Summarizes article, handling long text by splitting into chunks."""
-    MAX_TOKENS = 1024  # Model limit
-
-    if len(article_text.split()) > MAX_TOKENS:
-        print("⚠ Article is too long! Splitting into smaller parts...")
-        chunks = textwrap.wrap(article_text, width=2000)  # Approximate split
-        summaries = []
-        for chunk in chunks:
-            try:
-                summary = summarizer(chunk, max_length=150, min_length=50, do_sample=False)
-                summaries.append(summary[0]['summary_text'])
-            except Exception as e:
-                print(f"⚠ Error summarizing chunk: {e}")
-        return " ".join(summaries)
-    else:
+    """
+    Summarizes the article text using LED.
+    LED can handle long inputs (up to 16,384 tokens) so manual chunking may not be required.
+    """
+    try:
         summary = summarizer(article_text, max_length=150, min_length=50, do_sample=False)
         return summary[0]['summary_text']
+    except Exception as e:
+        print("⚠ Error during summarization:", e)
+        # Fall back to splitting text if needed:
+        MAX_TOKENS = 1024
+        if len(article_text.split()) > MAX_TOKENS:
+            print("⚠ Article is too long! Splitting into smaller parts...")
+            chunks = textwrap.wrap(article_text, width=2000)  # Approximate split
+            summaries = []
+            for chunk in chunks:
+                try:
+                    summary = summarizer(chunk, max_length=150, min_length=50, do_sample=False)
+                    summaries.append(summary[0]['summary_text'])
+                except Exception as ce:
+                    print(f"⚠ Error summarizing chunk: {ce}")
+            return " ".join(summaries)
+        else:
+            return "Summary not available."
 
 # ---------------------- 5️⃣ SEO Optimization ----------------------
 def optimize_for_seo(summary, title):
-    """Generates SEO metadata and keywords."""
-    keywords = ", ".join([word.capitalize() for word in title.split()[:5]])  # Simple keyword extraction
+    """Generates SEO metadata, keywords, and an SEO-friendly slug."""
+    keywords = ", ".join([word.capitalize() for word in title.split()[:5]])  # Basic keyword extraction
+    slug = slugify(title)
     return {
         'title': f"{title} | Latest News Update",
         'meta_description': summary[:160],
-        'keywords': keywords.split()
+        'keywords': keywords.split(),
+        'slug': slug
     }
 
 # ---------------------- 6️⃣ Store in MongoDB ----------------------
@@ -137,7 +139,8 @@ def store_in_mongodb(article_data, seo_data, collection_name):
             "text_hi": article_data['text_hi'],
             "summary": article_data['summary'],
             "summary_hi": article_data['summary_hi'],
-            "topic": article_data['topic']
+            "topic": article_data['topic'],
+            "slug": seo_data['slug']
         }
         collection.insert_one(document)
         print(f"✅ Article saved to MongoDB collection '{collection_name}': {document['title']}")
@@ -175,10 +178,10 @@ def process_news_articles(csv_file, collection_name):
         if not text:
             continue
 
-        summary = summarize_text(text)  # Handles long text
+        summary = summarize_text(text)  # Uses LED for summarization
         seo_data = optimize_for_seo(summary, title)
 
-        # Translate English fields into Hindi
+        # Translate English fields into Hindi using the faster Helsinki model
         title_hi = translate_to_hindi(title)
         text_hi = translate_to_hindi(text)
         summary_hi = translate_to_hindi(summary)
