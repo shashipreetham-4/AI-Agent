@@ -1,5 +1,20 @@
 # AI-Agent
 
+## 🌍 Live Website
+Our website is now live! 🎉
+🔗 **URL**: [http://35.200.129.97:3000/](http://35.200.129.97:3000/)
+
+## 🚀 Performance & SEO Excellence  
+We are proud to announce that our web application has achieved outstanding performance and SEO scores:  
+
+📱 **Mobile Performance:**  
+✅ **100% SEO Score** – Perfect optimization for search engines  
+✅ **97% Overall Performance** – Lightning-fast load times and seamless user experience  
+
+💻 **Web Performance:**  
+✅ **100% SEO Score** – Fully optimized for search engines  
+✅ **80% Overall Performance** – Efficient, responsive, and highly accessible  
+
 ## Overview  
 AI-Agent is an automated web scraper designed to fetch and process Telangana and Hyderabad news articles. It dynamically extracts content from multiple sources and updates the database for further analysis and summarization.  
 
@@ -48,14 +63,20 @@ pip install -r requirements.txt
 python scrape.py
 ```
 
+### Run the my-blog-app 
+- change the directory to my-blog-app
+```bash
+npm install
+npm run dev
+```
+
 ### Debugging Issues  
 - If content extraction fails, check the **HTML tags** used for extraction.  
 - If **Selenium is blocked**, increase delays or add user-agents in headers.  
 
-## Deployment (AWS)  
-1. **Set up an EC2 instance** with Python and necessary libraries.  
-2. **Clone the repository** and install dependencies.  
-3. **Run the scraper periodically** using a cron job or systemd service.  
+## Deployment (Google Cloud)  
+1. **Set up a VM instance** on Google Cloud with Python and required dependencies.  
+2. **Clone the repository**, install dependencies, and schedule the scraper using a cron job or systemd.  
 
 ## Contributors  
 💡 **Project Developers:**  

@@ -18,3 +18,5 @@ lxml_html_clean
 sacremoses
 selenium
 webdriver-manager
+sentencepiece
+transformers

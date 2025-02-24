@@ -58,10 +58,10 @@ def extract_news_content(url):
         if not article.text:
             raise ValueError("No text extracted from article!")
 
-        print(f"✅ Extracted: {article.title}")
+        print(f"Extracted: {article.title}")
         return article.title, article.text
     except Exception as e:
-        print(f"⚠️ Error extracting from {url}: {e}")
+        print(f"Error extracting from {url}: {e}")
         return None, None
 
 
@@ -71,7 +71,7 @@ def summarize_text(article_text):
 
     # If the text is too long, split into chunks
     if len(article_text.split()) > MAX_TOKENS:
-        print("⚠️ Article is too long! Splitting into smaller parts...")
+        print("Article is too long! Splitting into smaller parts...")
         chunks = textwrap.wrap(article_text, width=2000)  # Approximate split
         summaries = []
         
@@ -80,7 +80,7 @@ def summarize_text(article_text):
                 summary = summarizer(chunk, max_length=150, min_length=50, do_sample=False)
                 summaries.append(summary[0]['summary_text'])
             except Exception as e:
-                print(f"⚠️ Error summarizing chunk: {e}")
+                print(f"Error summarizing chunk: {e}")
 
         return " ".join(summaries)  # Combine chunked summaries
     else:
@@ -103,7 +103,7 @@ def store_in_mongodb(article_data, seo_data):
     """Stores article data in MongoDB."""
     collection = get_mongo_collection()
     if collection is None:
-        print("⚠️ MongoDB Connection Failed. Skipping storage.")
+        print(" MongoDB Connection Failed. Skipping storage.")
         return
 
     try:
@@ -126,7 +126,7 @@ def process_news_articles(csv_file="data.csv"):
     urls = read_news_links(csv_file)
     
     if not urls:
-        print("⚠️ No URLs found in CSV. Exiting...")
+        print(" No URLs found in CSV. Exiting...")
         return
 
     for url in urls:
@@ -145,5 +145,5 @@ def process_news_articles(csv_file="data.csv"):
 
 
 if __name__ == "__main__":
-    print(f"🚀 News Agent started. Processing links from CSV...")
+    print(f"News Agent started. Processing links from CSV...")
     process_news_articles()

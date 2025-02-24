@@ -13,7 +13,7 @@ import textwrap
 logging.basicConfig(filename='news_agent.log', level=logging.INFO)
 
 # MongoDB Connection
-MONGO_URI = "mongodb+srv://news_db:12345@cluster0.hryxp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # Change if using remote DB
+MONGO_URI = "mongodb+srv://news_db:12345@cluster0.hryxp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DB_NAME = "news_db"
 
 # Default collection names
@@ -34,7 +34,7 @@ def translate_to_hindi(text):
         translation = translator(text, max_length=512)
         return translation[0]['translation_text']
     except Exception as e:
-        print(f"⚠ Error during translation: {e}")
+        print(f"Error during translation: {e}")
         return "Translation not available."
 
 
@@ -45,7 +45,7 @@ def get_mongo_collection(collection_name):
         db = client[DB_NAME]
         return db[collection_name]
     except Exception as e:
-        logging.error(f"❌ MongoDB Connection Error: {e}")
+        logging.error(f" MongoDB Connection Error: {e}")
         return None
 
 
@@ -58,7 +58,7 @@ def read_news_links(csv_file):
         urls = df["url"].tolist()
         if not urls:
             raise ValueError("No valid URLs found in CSV!")
-        print(f"✅ Found {len(urls)} valid URLs in {csv_file}.")
+        print(f" Found {len(urls)} valid URLs in {csv_file}.")
         return urls
     except Exception as e:
         print(f" Error reading CSV {csv_file}: {e}")
@@ -73,10 +73,10 @@ def extract_news_content(url):
         article.parse()
         if not article.text:
             raise ValueError("No text extracted from article!")
-        print(f"✅ Extracted: {article.title}")
+        print(f" Extracted: {article.title}")
         return article.title, article.text
     except Exception as e:
-        print(f"⚠ Error extracting from {url}: {e}")
+        print(f" Error extracting from {url}: {e}")
         return None, None
 
 
@@ -101,7 +101,7 @@ def summarize_text(article_text):
                     summary = summarizer(chunk, max_length=150, min_length=50, do_sample=False)
                     summaries.append(summary[0]['summary_text'])
                 except Exception as ce:
-                    print(f"⚠ Error summarizing chunk: {ce}")
+                    print(f" Error summarizing chunk: {ce}")
             return " ".join(summaries)
         else:
             return "Summary not available."
@@ -170,7 +170,7 @@ def process_news_articles(csv_file, collection_name):
     """Processes news articles from the given CSV and stores them in the specified MongoDB collection."""
     urls = read_news_links(csv_file)
     if not urls:
-        print(f"⚠ No URLs found in {csv_file}. Exiting...")
+        print(f" No URLs found in {csv_file}. Exiting...")
         return
 
     for url in urls:
@@ -209,7 +209,7 @@ def process_news_articles(csv_file, collection_name):
 
 
 if __name__ == '__main__':
-    print("🚀 News Agent started.")
+    print(" News Agent started.")
 
 
     process_news_articles(csv_file="data/telangana_news.csv", collection_name=DEFAULT_ARTICLES_COLLECTION)

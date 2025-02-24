@@ -101,7 +101,7 @@ def start_scheduler():
     scrape_news()
 
     # Schedule it to run every hour
-    schedule.every(1).hours.do(scrape_news)
+    schedule.every(8).hours.do(scrape_news)
 
     while True:
         print("⏳ Waiting for next run...")
