@@ -89,7 +89,7 @@ def summarize_text(article_text):
         summary = summarizer(article_text, max_length=150, min_length=50, do_sample=False)
         return summary[0]['summary_text']
     except Exception as e:
-        print("⚠ Error during summarization:", e)
+        print("Error during summarization:", e)
 
         MAX_TOKENS = 1024
         if len(article_text.split()) > MAX_TOKENS:

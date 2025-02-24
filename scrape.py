@@ -85,17 +85,17 @@ def scrape_news():
             print(f"⚠ No new articles found for '{csv_file}'")
 
 
-    print("🚀 Running dbs.py to process scraped data...")
+    print(" Running dbs.py to process scraped data...")
     try:
         subprocess.run(["python", "dbs.py"], check=True)
-        print("✅ Successfully ran dbs.py")
+        print(" Successfully ran dbs.py")
     except subprocess.CalledProcessError as e:
         print(f" Error running dbs.py: {e}")
 
 
 def start_scheduler():
     """Schedules the scraper to run every hour."""
-    print("🚀 Starting the news scraper...")
+    print(" Starting the news scraper...")
     
 
     scrape_news()
@@ -104,7 +104,7 @@ def start_scheduler():
     schedule.every(8).hours.do(scrape_news)
 
     while True:
-        print("⏳ Waiting for next run...")
+        print(" Waiting for next run...")
         schedule.run_pending()
         time.sleep(60)
 
