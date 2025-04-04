@@ -2,7 +2,7 @@
 
 ## 🌍 Live Website
 Our website is now live! 🎉
-🔗 **URL**: [http://35.200.129.97:3000/](http://35.200.129.97:3000/)
+🔗 **URL**: [http://34.93.62.126:3000](http://34.93.62.126:3000)
 
 ## 🚀 Performance & SEO Excellence  
 We are proud to announce that our web application has achieved outstanding performance and SEO scores:  
